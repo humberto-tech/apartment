@@ -34,6 +34,7 @@ public class GuestFileRepository implements GuestRepository {
         guest.setEmail(fields[3]);
         guest.setPhone(fields[4]);
         guest.setState(fields[5]);
+        return guest;
     }
 
 
