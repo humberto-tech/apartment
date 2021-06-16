@@ -1,6 +1,8 @@
 package apartment.models;
 
 import java.math.BigDecimal;
+import java.util.Objects;
+
 public class Host {
     String id;
     String lastName;
@@ -11,7 +13,7 @@ public class Host {
     String state;
     int postalCode;
     BigDecimal standardRate;
-    BigDecimal weekendRage;
+    BigDecimal weekendRate;
 
 
     public void setId(String id) {
@@ -50,8 +52,8 @@ public class Host {
         this.standardRate = standardRate;
     }
 
-    public void setWeekendRage(BigDecimal weekendRage) {
-        this.weekendRage = weekendRage;
+    public void setWeekendRate(BigDecimal weekendRate) {
+        this.weekendRate = weekendRate;
     }
 
     public String getId() {
@@ -90,14 +92,20 @@ public class Host {
         return standardRate;
     }
 
-    public BigDecimal getWeekendRage() {
-        return weekendRage;
+    public BigDecimal getWeekendRate() {
+        return weekendRate;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Host host = (Host) o;
+        return postalCode == host.postalCode && Objects.equals(id, host.id) && Objects.equals(lastName, host.lastName) && Objects.equals(email, host.email) && Objects.equals(phone, host.phone) && Objects.equals(address, host.address) && Objects.equals(city, host.city) && Objects.equals(state, host.state) && Objects.equals(standardRate, host.standardRate) && Objects.equals(weekendRate, host.weekendRate);
+    }
 
-
-
-
-
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, lastName, email, phone, address, city, state, postalCode, standardRate, weekendRate);
+    }
 }
