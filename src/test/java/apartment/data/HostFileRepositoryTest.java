@@ -62,9 +62,4 @@ public class HostFileRepositoryTest{
         assertEquals(null, repository.findByEmail("madeThisEmail@up.co.jp"));
     }
 
-
-
-
-
-
 }

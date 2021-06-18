@@ -1,5 +1,7 @@
 package apartment.models;
 
+import java.util.Objects;
+
 public class Guest
 {
     int id;
@@ -54,6 +56,20 @@ public class Guest
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Guest guest = (Guest) o;
+        return id == guest.id && Objects.equals(firstName, guest.firstName) && Objects.equals(lastName, guest.lastName) && Objects.equals(email, guest.email) && Objects.equals(state, guest.state) && Objects.equals(phone, guest.phone);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, lastName, email, state, phone);
     }
 }
 

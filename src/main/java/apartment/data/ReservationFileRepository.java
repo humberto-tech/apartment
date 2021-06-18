@@ -1,5 +1,6 @@
 package apartment.data;
 
+import apartment.models.Host;
 import apartment.models.Reservation;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -9,6 +10,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ReservationFileRepository implements ReservationRepository{
 
@@ -26,26 +28,75 @@ public class ReservationFileRepository implements ReservationRepository{
             for (String line = reader.readLine(); line != null; line = reader.readLine()) {
 
                 String[] fields = line.split(",", -1);
-                if (fields.length == 4) {
+                if (fields.length == 5) {
                     result.add(deserialize(fields));
                 }
             }
         } catch (IOException ex) {
             // don't throw on read
         }
+
+
+
+
         return result;
     }
 
 
 
     public Reservation add(Reservation reservation) throws DataException {
-        List<Reservation> all = findByHostId(reservation.getId());
-        reservation.setId(java.util.UUID.randomUUID().toString());
+        List<Reservation> all = findByHostId(reservation.getHost().getId());
+        //reservation.setId(java.util.UUID.randomUUID().toString());
+        // Need to figure out how to add a new id
+
+        int nextId = all.stream()
+                .mapToInt(Reservation::getId)
+                .max()
+                .orElse(0) + 1;
+        reservation.setId(nextId);
+
         all.add(reservation);
-        writeAll(all, reservation.getId());
+        writeAll(all, reservation.getHost().getId());
         return reservation;
     }
 
+    @Override
+    public boolean removeById(int id,Host host) throws DataException {
+
+
+        List<Reservation> reservations=findByHostId(host.getId());
+
+        Reservation removeThisReservation=reservations.stream().filter(reservation -> reservation.getId()==id)
+                .findFirst()
+                .orElse(null);
+
+        if(removeThisReservation==null){
+            return false;
+        }
+        reservations.remove(removeThisReservation);
+        writeAll(reservations,host.getId());
+
+        return true;
+    }
+    //EDIT feature:
+    @Override
+    public boolean update(int reservationId, Host host,Reservation updatedReservation)  {
+        List<Reservation> reservations=findByHostId(host.getId());
+
+//        Reservation currentReservation=reservations.stream().filter(reservation -> reservation.getId()==reservationId).findFirst().orElse(null);
+//
+//        if(currentReservation==null){
+//            return false;
+//        }
+        for (int i = 0; i < reservations.size(); i++) {
+            if (reservations.get(i).getId()==reservationId) {
+                reservations.set(i, updatedReservation);
+                return true;
+            }
+        }
+        return  false;
+
+    }
 
 
     private void writeAll(List<Reservation> reservations, String hostId) throws DataException {
@@ -77,13 +128,15 @@ public class ReservationFileRepository implements ReservationRepository{
 
     private Reservation deserialize(String[] fields) {
         Reservation reservation = new Reservation();
-        reservation.setId(fields[0]);
+        reservation.setId(Integer.parseInt( fields[0]));
         reservation.setStartDate(LocalDate.parse(fields[1]));
         reservation.setEndDate(LocalDate.parse(fields[2]));
         reservation.setGuestId(Integer.parseInt(fields[3]));
         reservation.setTotal(new BigDecimal(fields[4]));
         return reservation;
     }
+
+
 
 
 

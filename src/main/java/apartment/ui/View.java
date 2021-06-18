@@ -1,6 +1,10 @@
 package apartment.ui;
 
+import apartment.models.Host;
+import apartment.models.Reservation;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class View {
@@ -43,6 +47,42 @@ public class View {
     public String getUserStringInput(String prompt){
         return io.readString(prompt);
     }
+
+
+    public void printReservations(Host host, List<Reservation> reservations){
+        io.printf("%s: %s, %s", host.getLastName(),host.getCity(),host.getState());
+
+        if(reservations.size()==0){
+            io.println("No reservations!!!");
+        }
+        reservations.stream().forEach(
+               reservation ->  io.printf("ID: %d, %s - %s, Guest: %s, %s, Email: %s",
+                       reservation.getId(),
+                       reservation.getStartDate(),
+                       reservation.getEndDate(),
+                       reservation.getGuest().getLastName(),
+                       reservation.getGuest().getFirstName(),
+                       reservation.getGuest().getEmail()));
+    }
+
+    public void hostNotFound(String email){
+        io.println("No host found with the following: "+email);
+    }
+
+    public int getUserIntInput(String prompt, int min, int max){
+        return io.readInt(prompt,min,max);
+    }
+
+    public void displayReservationDeletionStatus(boolean deleted, Host host){
+        if(deleted){
+
+        }else{
+
+        }
+    }
+
+
+
 
 
 
