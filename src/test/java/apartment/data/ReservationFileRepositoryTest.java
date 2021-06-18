@@ -88,6 +88,42 @@ public class ReservationFileRepositoryTest {
     }
 
     //todo update test
+    @Test
+    void updatingAValidReservation() throws  DataException{
+       // 2,2021-09-10,2021-09-16,136,1300
+        Host host=new Host();
+        host.setId("2e72f86c-b8fe-4265-b4f1-304dea8762db");
+
+
+
+        Reservation newReservation= new Reservation();
+        newReservation.setId(2);
+        newReservation.setStartDate(LocalDate.of(2022,9,10));
+        newReservation.setEndDate(LocalDate.of(2022,12,10));
+        newReservation.setGuestId(136);
+        newReservation.setHost(host);
+
+        newReservation.setTotal(new BigDecimal("8930"));
+        assertEquals(true, repository.update(2,newReservation));
+    }
+    @Test
+    void updatingAWithNonValidReservation() throws DataException{
+        Host host=new Host();
+        host.setId("2e72f86c-b8fe-4265-b4f1-304dea8762db");
+
+
+
+        Reservation newReservation= new Reservation();
+        newReservation.setId(27);
+        newReservation.setStartDate(LocalDate.of(2022,9,10));
+        newReservation.setEndDate(LocalDate.of(2022,12,10));
+        newReservation.setGuestId(136);
+        newReservation.setHost(host);
+
+        newReservation.setTotal(new BigDecimal("8930"));
+        assertEquals(false, repository.update(27,newReservation));
+    }
+
 
 
 

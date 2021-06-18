@@ -1,6 +1,7 @@
 package apartment.models;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 
 
@@ -80,5 +81,15 @@ public class Reservation {
                 ", guest=" + guest +
                 ", host=" + host +
                 '}';
+    }
+
+    public void calculateTotal(){
+        for(LocalDate date=this.startDate; date.isBefore(startDate); date=date.plusDays(1)){
+            if(date.getDayOfWeek()== DayOfWeek.FRIDAY || date.getDayOfWeek()==DayOfWeek.SATURDAY){
+                total=total.add(host.weekendRate);
+            }else{
+                total=total.add(host.standardRate);
+            }
+        }
     }
 }

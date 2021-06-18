@@ -79,8 +79,8 @@ public class ReservationRepositoryDouble implements ReservationRepository {
 
 
 
-    public boolean update(int reservationId, Host host, Reservation updatedReservation) throws DataException {
-        List<Reservation> reservations=findByHostId(host.getId());
+    public boolean update(int reservationId, Reservation updatedReservation) throws DataException {
+        List<Reservation> reservations=findByHostId(updatedReservation.getHost().getId());
 
 //        Reservation currentReservation=reservations.stream().filter(reservation -> reservation.getId()==reservationId).findFirst().orElse(null);
 //

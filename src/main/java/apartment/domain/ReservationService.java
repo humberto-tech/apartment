@@ -4,12 +4,13 @@ import apartment.data.*;
 import apartment.models.Guest;
 import apartment.models.Host;
 import apartment.models.Reservation;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+@Service
 public class ReservationService {
    private ReservationRepository reservationRepository;
    private GuestRepository guestRepository;
@@ -58,13 +59,23 @@ public class ReservationService {
        return reservationRepository.removeById(reservationId,host);
    }
 
-   public boolean updateReservation(int reservationId, Host host, Reservation updatedReservation){
-       return false;
+   public Result<Boolean> updateReservation(Reservation updatedReservation, int reservationId) throws DataException{
+       Result<Reservation> validationResults=validate(updatedReservation,true);
+
+       Result<Boolean> output=new Result<>();
+       output.setMessage(validationResults.getErrorMessages());
+
+       if(output.isSuccess()){
+           output.setPayload(reservationRepository.update(reservationId,updatedReservation));
+           return  output;
+       }
+       output.setPayload(false);
+       return  output;
    }
 
 
-   public Result<Reservation> add(Reservation reservation) throws DataException{
-       Result<Reservation> results=validateAdd(reservation);
+   public Result<Reservation> add(Reservation reservation,boolean updating) throws DataException{
+       Result<Reservation> results=validate(reservation,updating);
        if( results.isSuccess()){
            //total math over here.
            results.setPayload(reservationRepository.add(reservation));
@@ -72,13 +83,13 @@ public class ReservationService {
        return results;
    }
 
-   private Result<Reservation> validateAdd(Reservation reservation) throws DataException{
+   private Result<Reservation> validate(Reservation reservation,boolean updating) throws DataException{
        Result<Reservation> result=new Result<>();
        validateNullValues(reservation,result);
        if(!result.isSuccess()){
            return result;
        }
-       validateValues(reservation,result);
+       validateValues(reservation,result, updating);
        if(!result.isSuccess()){
            return result;
        }
@@ -86,11 +97,15 @@ public class ReservationService {
        return result;
    }
 
-   private void validateValues(Reservation reservation,Result<Reservation> result ) throws DataException{
+   private void validateValues(Reservation reservation,Result<Reservation> result,boolean updating ) throws DataException{
 
-
-       if(!reservation.getStartDate().isBefore(LocalDate.now())){
+       if(updating==true && reservation.getStartDate().compareTo(LocalDate.now())<0){
            String message=String.format("Start date needs to be after today's date %s", LocalDate.now());
+           result.addErrorMessage(message);
+       }
+
+       if((reservation.getStartDate().compareTo(LocalDate.now())<0 && updating==false)){
+           String message=String.format("Start date needs to be current day: %s or later", LocalDate.now());
            result.addErrorMessage(message);
        }
 
@@ -98,17 +113,21 @@ public class ReservationService {
            result.addErrorMessage("Start date is after the end date. ");
        }
 
-       if(validateDateOverlap(reservation)){
+       if(validateDateOverlap(reservation,updating)){
            result.addErrorMessage("The reservation has an overlap with current reservations.");
        }
 
    }
 
-   private boolean validateDateOverlap(Reservation reservation){
+   private boolean validateDateOverlap(Reservation reservation, boolean updating){
       List<Reservation> currentHostReservations=reservationRepository.findByHostId(reservation.getHost().getId());
 
 
       for(Reservation currentReservation: currentHostReservations){
+          if(currentReservation.getId()==reservation.getId() && updating==true){
+                  continue;
+          }
+
           boolean overLap=!(currentReservation.getStartDate().compareTo(reservation.getEndDate()) >=0|| currentReservation.getEndDate().compareTo(reservation.getStartDate())<=0);
           if(overLap){
 
@@ -116,7 +135,6 @@ public class ReservationService {
           }
       }
       return false;
-
    }
 
 

@@ -3,6 +3,7 @@ package apartment.data;
 import apartment.models.Host;
 import apartment.models.Reservation;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Repository;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Repository
 public class ReservationFileRepository implements ReservationRepository{
 
     private static final String HEADER = "id,start_date,end_date,guest_id,total";
@@ -80,8 +82,8 @@ public class ReservationFileRepository implements ReservationRepository{
     }
     //EDIT feature:
     @Override
-    public boolean update(int reservationId, Host host,Reservation updatedReservation)  {
-        List<Reservation> reservations=findByHostId(host.getId());
+    public boolean update(int reservationId, Reservation updatedReservation) throws DataException {
+        List<Reservation> reservations=findByHostId(updatedReservation.getHost().getId());
 
 //        Reservation currentReservation=reservations.stream().filter(reservation -> reservation.getId()==reservationId).findFirst().orElse(null);
 //
@@ -91,6 +93,7 @@ public class ReservationFileRepository implements ReservationRepository{
         for (int i = 0; i < reservations.size(); i++) {
             if (reservations.get(i).getId()==reservationId) {
                 reservations.set(i, updatedReservation);
+                writeAll(reservations,updatedReservation.getHost().getId());
                 return true;
             }
         }

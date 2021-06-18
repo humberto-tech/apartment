@@ -1,11 +1,19 @@
 package apartment;
 
+import apartment.data.GuestFileRepository;
 import apartment.data.ReservationFileRepository;
+import apartment.ui.Controller;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
 
+@ComponentScan
+@PropertySource("classpath:data.properties")
 public class App {
     public static void main(String[] args) {
-        ReservationFileRepository repo=new ReservationFileRepository("./data/reservations");
-
-
+        ApplicationContext context = new AnnotationConfigApplicationContext(App.class);
+        Controller controller = context.getBean(Controller.class);
+        controller.run();
     }
 }

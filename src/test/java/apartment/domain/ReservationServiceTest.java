@@ -48,7 +48,7 @@ public class ReservationServiceTest {
     }
     @Test
     public void addNullReservation() throws DataException{
-        Result<Reservation> result=reservationService.add(null);
+        Result<Reservation> result=reservationService.add(null,false);
         assertEquals(1,result.getErrorMessages().size());
 
         assertEquals("Reservation is Null",result.getErrorMessages().get(0));
@@ -56,7 +56,7 @@ public class ReservationServiceTest {
     @Test
     public void addReservationWillNoObjectSet() throws DataException{
         Reservation reservation=new Reservation();
-        Result<Reservation> result=reservationService.add(reservation);
+        Result<Reservation> result=reservationService.add(reservation,false);
         assertEquals(5,result.getErrorMessages().size());
     }
     @Test
@@ -68,7 +68,7 @@ public class ReservationServiceTest {
         reservation.setTotal(new BigDecimal("-2"));
         reservation.setGuest(new Guest());
         reservation.setHost(HostRepositoryDouble.HOST);
-        Result<Reservation> result=reservationService.add(reservation);
+        Result<Reservation> result=reservationService.add(reservation,false);
         assertEquals(1,result.getErrorMessages().size());
         assertEquals("total is negative this is not possible.",result.getErrorMessages().get(0));
     }
@@ -94,20 +94,54 @@ public class ReservationServiceTest {
         reservation.setGuest(basicGuest);
         reservation.setHost(host);
 
-        Result<Reservation> result=reservationService.add(reservation);
+        Result<Reservation> result=reservationService.add(reservation,false);
         assertEquals(2,result.getErrorMessages().size());
     }
     @Test
     public void addReservationWithStartDateBeforeCurrentDay() throws DataException{
+        Reservation reservation= new Reservation();
+        reservation.setId(3);
+
+        reservation.setStartDate(LocalDate.now().minusDays(1));
+        reservation.setEndDate(LocalDate.now().plusDays(1));
+        reservation.setTotal(new BigDecimal(400));
+        reservation.setGuest(GuestRepositoryDouble.GUEST3);
+        reservation.setHost(HostRepositoryDouble.HOST);
+        reservation.setGuestId(3);
+
+        Result<Reservation> result=reservationService.add(reservation,false);
+        assertEquals(1,result.getErrorMessages().size());
 
     }
     @Test
     public void addReservationWithStartDateAfterEndDate() throws DataException{
+        Reservation reservation= new Reservation();
+        reservation.setId(3);
 
+        reservation.setStartDate(LocalDate.now().plusDays(5));
+        reservation.setEndDate(LocalDate.now().plusDays(1));
+        reservation.setTotal(new BigDecimal(400));
+        reservation.setGuest(GuestRepositoryDouble.GUEST3);
+        reservation.setHost(HostRepositoryDouble.HOST);
+        reservation.setGuestId(3);
+
+        Result<Reservation> result=reservationService.add(reservation,false);
+        assertEquals(1,result.getErrorMessages().size());
     }
     @Test
     public void addReservationWithOverLap() throws DataException{
+        Reservation reservation= new Reservation();
+        reservation.setId(3);
 
+        reservation.setStartDate(LocalDate.of(2035,2,12));
+        reservation.setEndDate(LocalDate.of(2035,2,13));
+        reservation.setTotal(new BigDecimal(400));
+        reservation.setGuest(GuestRepositoryDouble.GUEST3);
+        reservation.setHost(HostRepositoryDouble.HOST);
+        reservation.setGuestId(3);
+
+        Result<Reservation> result=reservationService.add(reservation,false);
+        assertEquals(1,result.getErrorMessages().size());
     }
     @Test
     public void addSuccessfulReservation() throws DataException{

@@ -14,6 +14,8 @@ public class GuestRepositoryDouble implements GuestRepository {
 
     public final static Guest GUEST2=makeGuest2();
 
+    public final static Guest GUEST3=makeGuest3();
+
     public static Guest makeGuest2(){
         Guest guest= new Guest();
         guest.setId(2);
@@ -22,6 +24,17 @@ public class GuestRepositoryDouble implements GuestRepository {
         guest.setEmail("empty2@yahoo.com");
         guest.setState("NY");
         guest.setPhone("(612) 9393583");
+        return guest;
+    }
+
+    public static Guest makeGuest3(){
+        Guest guest= new Guest();
+        guest.setId(3);
+        guest.setFirstName("First3");
+        guest.setLastName("Last3");
+        guest.setEmail("empty2@yahoo.com");
+        guest.setState("NY");
+        guest.setPhone("(612) 9393588");
         return guest;
     }
 
@@ -40,6 +53,7 @@ public class GuestRepositoryDouble implements GuestRepository {
     public GuestRepositoryDouble(){
 
         guests.add(GUEST);
+        guests.add(GUEST3);
     }
 
     public List<Guest> findAll() throws DataException{

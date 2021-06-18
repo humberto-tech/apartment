@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Response {
 
-    private final ArrayList<String> messages = new ArrayList<>();
+    protected  List<String> messages = new ArrayList<>();
 
     public boolean isSuccess() {
         return messages.size() == 0;
@@ -18,4 +18,8 @@ public class Response {
     public void addErrorMessage(String message) {
         messages.add(message);
     }
+
+
+
+
 }
