@@ -89,14 +89,6 @@ public class ReservationService {
    private void validateValues(Reservation reservation,Result<Reservation> result ) throws DataException{
 
 
-       if(!hostRepository.findByEmail(reservation.getHost().getEmail()).equals(reservation.getHost())){
-           result.addErrorMessage("Host doesn't exist in the current host file");
-       }
-
-       if(!guestRepository.findByEmail(reservation.getGuest().getEmail()).equals(reservation.getGuest())){
-           result.addErrorMessage("Guest doesn't exist in the current guest file. ");
-       }
-
        if(!reservation.getStartDate().isBefore(LocalDate.now())){
            String message=String.format("Start date needs to be after today's date %s", LocalDate.now());
            result.addErrorMessage(message);
@@ -115,6 +107,7 @@ public class ReservationService {
    private boolean validateDateOverlap(Reservation reservation){
       List<Reservation> currentHostReservations=reservationRepository.findByHostId(reservation.getHost().getId());
 
+
       for(Reservation currentReservation: currentHostReservations){
           boolean overLap=!(currentReservation.getStartDate().compareTo(reservation.getEndDate()) >=0|| currentReservation.getEndDate().compareTo(reservation.getStartDate())<=0);
           if(overLap){
@@ -128,7 +121,7 @@ public class ReservationService {
 
 
 
-   private void validateNullValues(Reservation reservation, Result<Reservation> result){
+   private void validateNullValues(Reservation reservation, Result<Reservation> result) throws DataException {
 
        if(reservation==null){
            result.addErrorMessage("Reservation is Null");
@@ -136,7 +129,7 @@ public class ReservationService {
        }
 
       if(reservation.getGuest()==null){
-          result.addErrorMessage("Guest is empty or null.");
+          result.addErrorMessage("Guest is null.");
       }
       if(reservation.getStartDate()==null){
           result.addErrorMessage("start date is empty or null.");
@@ -149,11 +142,19 @@ public class ReservationService {
        if(reservation.getTotal()==null){
            result.addErrorMessage("total is null. ");
        }
-       if(reservation.getTotal().signum()==-1){
-           result.addErrorMessage("total is negative this is not possible. ");
+       if(reservation.getTotal()!=null&&reservation.getTotal().signum()==-1 ){
+           result.addErrorMessage("total is negative this is not possible.");
        }
        if(reservation.getHost()==null){
-           result.addErrorMessage("Guest is empty or null.");
+           result.addErrorMessage("Host is  null.");
+       }
+
+       if(reservation.getHost()!=null&&hostRepository.findByEmail(reservation.getHost().getEmail())==null){
+           result.addErrorMessage("Host doesn't exist in the current host file");
+       }
+
+       if(reservation.getGuest()!=null &&(guestRepository.findByEmail(reservation.getGuest().getEmail())==null)){
+           result.addErrorMessage("Guest doesn't exist in the current guest file. ");
        }
    }
 

@@ -6,10 +6,14 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HostRepositoryDouble {
+public class HostRepositoryDouble implements HostRepository{
     private ArrayList<Host> hosts= new ArrayList<>();
+    public final static Host HOST=makeHost();
 
     public HostRepositoryDouble() {
+        hosts.add(HOST);
+    }
+    public static Host makeHost(){
         Host host= new Host();
         host.setId("3edda6bc-ab95-49a8-8962-d50b53f84b15");
         host.setLastName("Yearnes");
@@ -21,25 +25,26 @@ public class HostRepositoryDouble {
         host.setPostalCode(Integer.parseInt("79182"));
         host.setStandardRate(new BigDecimal("340"));
         host.setWeekendRate(new BigDecimal("425"));
-
-        hosts.add(host)
+        return host;
     }
-    public List<Host> findAll(){
+
+
+    public List<Host> findAll() throws DataException{
         return hosts;
     }
-    public Host add(Host host){
+    public Host add(Host host) throws DataException{
         host.setId(java.util.UUID.randomUUID().toString());
         hosts.add(host);
         return host;
     }
 
-    public Host findByEmail(String email){
+    public Host findByEmail(String email) throws DataException{
         return hosts.stream()
                 .filter(host -> host.getEmail().equalsIgnoreCase(email))
                 .findFirst()
                 .orElse(null);
     }
-    
+
 
 
 
