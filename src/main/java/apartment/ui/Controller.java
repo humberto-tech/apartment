@@ -67,14 +67,13 @@ public class Controller {
 
         String hostEmail=view.getUserStringInput("Host Email: ");
 
-        //Do some fancy stuff here
         Host host= hostService.findHostFromEmail(hostEmail);
 
         if(host==null){
             view.hostNotFound(hostEmail);
             return;
         }
-        //Most fancy stuff
+
         List<Reservation> hostReservations=reservationService.getReservationForParticularHost(host);
         view.printReservations(host,hostReservations);
     }
@@ -107,23 +106,26 @@ public class Controller {
     public void displayCancelReservation() throws DataException{
         view.displayHeader(MainMenuOption.CANCEL_RESERVATION.getMessage());
         String guestEmail=view.getUserStringInput("Guest Email: ");
+        Guest guest= guestService.findGuestByEmail(guestEmail);
+        if(guest==null){
+            view.guestNotFound(guestEmail);
+            return;
+        }
         String hostEmail=view.getUserStringInput("Host Email: ");
-
         Host host= hostService.findHostFromEmail(hostEmail);
         if(host==null){
             view.hostNotFound(hostEmail);
             return;
         }
 
-        Guest guest= guestService.findGuestByEmail(guestEmail);
-        if(guest==null){
-            view.guestNotFound(guestEmail);
-            return;
-        }
 
         List<Reservation> reservations=reservationService.getReservationForParticularHost(host);
-        reservations=reservations.stream().filter(reservation -> reservation.getGuest().getEmail().equals(guestEmail)).collect(Collectors.toList());
+
+        reservations=reservations.stream().filter(reservation -> reservation.getGuest().getEmail().equals(guestEmail)
+        && reservation.getStartDate().compareTo(LocalDate.now())>0).collect(Collectors.toList());
+
         view.printReservations(host,reservations);
+
         if(reservations.size()==0){
 
             return;
@@ -138,18 +140,19 @@ public class Controller {
         view.displayHeader(MainMenuOption.MAKE_RESERVATION.getMessage());
 
         String guestEmail=view.getUserStringInput("Guest Email: ");
-        String hostEmail=view.getUserStringInput("Host Email: ");
-
-        Host host= hostService.findHostFromEmail(hostEmail);
-        if(host==null){
-            view.hostNotFound(hostEmail);
-            return;
-        }
         Guest guest= guestService.findGuestByEmail(guestEmail);
         if(guest==null){
             view.guestNotFound(guestEmail);
             return;
         }
+
+        String hostEmail=view.getUserStringInput("Host Email: ");
+        Host host= hostService.findHostFromEmail(hostEmail);
+        if(host==null){
+            view.hostNotFound(hostEmail);
+            return;
+        }
+
 
         List<Reservation> reservations=reservationService.getReservationForParticularHost(host);
         // Filter to get future reservations.
@@ -169,6 +172,14 @@ public class Controller {
         newReservation.setGuestId(guest.getId());
         newReservation.setHost(host);
         newReservation.calculateTotal();
+
+        view.reservationSummary(newReservation);
+
+        if(view.displayReservationSummary(newReservation).equals("n")){
+            return;
+        }
+        Result<Reservation> result=reservationService.add(newReservation,false);
+        view.displayMakeReservationResults(result);
 
         //prompt user for validation.
     }
@@ -210,6 +221,7 @@ public class Controller {
             Result<Boolean> result= reservationService.updateReservation(newReservation,deleteThisid);
             view.displayEditReservationResult(result,newReservation);
         }
+
 
 
 

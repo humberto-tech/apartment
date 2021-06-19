@@ -129,7 +129,7 @@ public class ReservationServiceTest {
         assertEquals(1,result.getErrorMessages().size());
     }
     @Test
-    public void addReservationWithOverLap() throws DataException{
+    public void addReservationsWithOverLap() throws DataException{
         Reservation reservation= new Reservation();
         reservation.setId(3);
 
@@ -142,11 +142,36 @@ public class ReservationServiceTest {
 
         Result<Reservation> result=reservationService.add(reservation,false);
         assertEquals(1,result.getErrorMessages().size());
+
+        reservation.setStartDate(LocalDate.of(2035,2,9));
+        reservation.setEndDate(LocalDate.of(2035,2,12));
+        assertEquals(1,result.getErrorMessages().size());
+
+
+        reservation.setStartDate(LocalDate.of(2035,2,9));
+        reservation.setEndDate(LocalDate.of(2035,2,13));
+        assertEquals(1,result.getErrorMessages().size());
+
+        reservation.setStartDate(LocalDate.of(2035,2,1));
+        reservation.setEndDate(LocalDate.of(2035,2,13));
+        assertEquals(1,result.getErrorMessages().size());
     }
     @Test
     public void addSuccessfulReservation() throws DataException{
+        Reservation reservation= new Reservation();
+        reservation.setId(3);
 
+        reservation.setStartDate(LocalDate.of(2035,3,12));
+        reservation.setEndDate(LocalDate.of(2035,3,13));
+        reservation.setTotal(new BigDecimal(400));
+        reservation.setGuest(GuestRepositoryDouble.GUEST3);
+        reservation.setHost(HostRepositoryDouble.HOST);
+        reservation.setGuestId(3);
+
+        Result<Reservation> result=reservationService.add(reservation,false);
+        assertEquals(0,result.getErrorMessages().size());
     }
+
 
 
 

@@ -17,7 +17,21 @@ public class View {
         this.io = io;
     }
 
+    public void reservationSummary(Reservation reservation){
+        io.println("Reservation Summary:");
+        io.printf("Start date: %s",reservation.getStartDate());
+        io.printf("End date: %s",reservation.getEndDate());
+        io.printf("Total: %s",reservation.getTotal());
+    }
 
+    public String displayReservationSummary(Reservation reservation){
+        reservationSummary(reservation);
+        String userInput="";
+        while(!(userInput.equals("y") || userInput.equals("n"))){
+            userInput=io.readString("Is this okay? Select y or n.");
+        }
+        return userInput;
+    }
 
 
     public MainMenuOption selectMainMenuOption() {
@@ -31,7 +45,8 @@ public class View {
             max = Math.max(max, option.getValue());
         }
 
-        String message = String.format("Select [%s-%s]: ", min, max - 1);
+        //TODO: index box
+        String message = String.format("Select [%s-%s]: ", min, max);
         return MainMenuOption.fromValue(io.readInt(message, min, max));
     }
 
@@ -55,7 +70,7 @@ public class View {
         io.printf("%s: %s, %s%n", host.getLastName(),host.getCity(),host.getState());
 
         if(reservations.size()==0){
-            io.println("No reservations!!!");
+            io.println("No reservations for this host!!!");
         }
         reservations.stream().forEach(
                reservation ->  io.printf("ID: %d, %s - %s, Guest: %s, %s, Email: %s%n",
@@ -81,9 +96,9 @@ public class View {
     public void displayReservationDeletionStatus(boolean deleted, int deletedId){
         if(deleted){
             io.println("Success");
-            io.printf("Reservation %d has been cancelled%n", deletedId);
+            io.printf("Reservation %d has been removed%n", deletedId);
         }else{
-            io.printf("No deletion occurred.");
+            io.printf("No deletion occurred. This only occurs if you try to delete past reservation.");
         }
     }
 
@@ -111,6 +126,16 @@ public class View {
         }else{
             io.println("Edit did not occur.%n");
         }
+    }
+
+    public void displayMakeReservationResults(Result<Reservation> result){
+        if(!result.isSuccess()){
+            result.getErrorMessages().stream().forEach(a-> io.printf("%s%n",a));
+            return;
+        }
+        io.println("Success!!!");
+        io.printf("Reservation %d was created%n",result.getPayload().getId());
+
     }
 
 
