@@ -11,7 +11,7 @@ public interface ReservationRepository {
 
     boolean removeById(int id, Host host) throws DataException;
 
-     boolean update(int reservationId, Reservation updatedReservation) throws DataException;
+     boolean update(Reservation updatedReservation) throws DataException;
 
 
 }

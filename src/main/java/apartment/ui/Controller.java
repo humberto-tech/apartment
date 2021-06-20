@@ -77,32 +77,7 @@ public class Controller {
         List<Reservation> hostReservations=reservationService.getReservationForParticularHost(host);
         view.printReservations(host,hostReservations);
     }
-/*
-    public void displayMakeReservation() throws DataException{
 
-        view.displayHeader(MainMenuOption.MAKE_RESERVATION.getMessage());
-
-        String guestEmail=view.getUserStringInput("Guest Email: ");
-        String hostEmail=view.getUserStringInput("Host Email: ");
-
-        Host host= hostService.findHostFromEmail(hostEmail);
-        if(host==null){
-            view.hostNotFound(hostEmail);
-            return;
-        }
-        List<Reservation> reservations=reservationService.getReservationForParticularHost(host);
-        //Understand this code
-        reservations=reservations.stream().filter(reservation -> reservation.getGuest().getEmail().equals(guestEmail)).collect(Collectors.toList());
-        view.printReservations(host,reservations);
-        if(reservations.size()==0){
-            return;
-        }
-        int deleteThisid=view.getUserIntInput("Reservation id to be removed: ",
-                reservations.stream().mapToInt(Reservation::getId).min().getAsInt(),
-                reservations.stream().mapToInt(Reservation::getId).max().getAsInt());
-        view.displayReservationDeletionStatus(reservationService.removeReservationById(deleteThisid,host),host);
-
-    }*/
     public void displayCancelReservation() throws DataException{
         view.displayHeader(MainMenuOption.CANCEL_RESERVATION.getMessage());
         String guestEmail=view.getUserStringInput("Guest Email: ");
@@ -155,7 +130,7 @@ public class Controller {
 
 
         List<Reservation> reservations=reservationService.getReservationForParticularHost(host);
-        // Filter to get future reservations.
+
         reservations=reservations.stream().filter(reservation -> reservation.getEndDate().compareTo(LocalDate.now())>=0).collect(Collectors.toList());
         view.printReservations(host,reservations);
         if(reservations.size()==0){
@@ -171,7 +146,7 @@ public class Controller {
         Result<Reservation> result=reservationService.add(newReservation,false);
         view.displayMakeReservationResults(result);
 
-        //prompt user for validation.
+
     }
     public void displayEditReservation() throws DataException{
         view.displayHeader(MainMenuOption.EDIT_RESERVATION.getMessage());
@@ -194,7 +169,7 @@ public class Controller {
         }
 
         List<Reservation> reservations=reservationService.getReservationForParticularHost(host);
-        // Filter to get future reservations.
+
         reservations=reservations.stream().filter(reservation ->  reservation.getGuest().getEmail().equals(guestEmail) ).collect(Collectors.toList());
         view.printReservations(host,reservations);
         if(reservations.size()==0){
@@ -213,13 +188,9 @@ public class Controller {
 
 
         if(view.displaySummaryOfNewReservations(newReservation).equals("y")){
-            Result<Boolean> result= reservationService.updateReservation(newReservation,deleteThisid);
+            Result<Boolean> result= reservationService.updateReservation(newReservation);
             view.displayEditReservationResult(result,newReservation);
         }
-
-
-
-
 
     }
 

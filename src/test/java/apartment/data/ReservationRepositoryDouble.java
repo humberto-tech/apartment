@@ -29,13 +29,13 @@ public class ReservationRepositoryDouble implements ReservationRepository {
         reservations.add(reservation);
 
         Reservation reservation2=new Reservation();
-        reservation.setId(2);
-        reservation.setStartDate(futureStartDate);
-        reservation.setEndDate(futureEndDate);
-        reservation.setTotal(new BigDecimal("2").multiply(HostRepositoryDouble.HOST.getWeekendRate()));
-        reservation.setGuest(GuestRepositoryDouble.GUEST2);
-        reservation.setHost(HostRepositoryDouble.HOST);
-        reservations.add(reservation);
+        reservation2.setId(2);
+        reservation2.setStartDate(futureStartDate);
+        reservation2.setEndDate(futureEndDate);
+        reservation2.setTotal(new BigDecimal("2").multiply(HostRepositoryDouble.HOST.getWeekendRate()));
+        reservation2.setGuest(GuestRepositoryDouble.GUEST3);
+        reservation2.setHost(HostRepositoryDouble.HOST);
+        reservations.add(reservation2);
 
 
 
@@ -79,16 +79,11 @@ public class ReservationRepositoryDouble implements ReservationRepository {
 
 
 
-    public boolean update(int reservationId, Reservation updatedReservation) throws DataException {
+    public boolean update(Reservation updatedReservation) throws DataException {
         List<Reservation> reservations=findByHostId(updatedReservation.getHost().getId());
 
-//        Reservation currentReservation=reservations.stream().filter(reservation -> reservation.getId()==reservationId).findFirst().orElse(null);
-//
-//        if(currentReservation==null){
-//            return false;
-//        }
         for (int i = 0; i < reservations.size(); i++) {
-            if (reservations.get(i).getId()==reservationId) {
+            if (reservations.get(i).getId()==updatedReservation.getId()) {
                 reservations.set(i, updatedReservation);
                 return true;
             }

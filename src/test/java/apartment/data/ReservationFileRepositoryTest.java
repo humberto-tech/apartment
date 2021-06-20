@@ -104,7 +104,7 @@ public class ReservationFileRepositoryTest {
         newReservation.setHost(host);
 
         newReservation.setTotal(new BigDecimal("8930"));
-        assertEquals(true, repository.update(2,newReservation));
+        assertEquals(true, repository.update(newReservation));
     }
     @Test
     void updatingAWithNonValidReservation() throws DataException{
@@ -121,7 +121,7 @@ public class ReservationFileRepositoryTest {
         newReservation.setHost(host);
 
         newReservation.setTotal(new BigDecimal("8930"));
-        assertEquals(false, repository.update(27,newReservation));
+        assertEquals(false, repository.update(newReservation));
     }
 
 

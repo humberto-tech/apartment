@@ -22,8 +22,6 @@ public class ReservationService {
        this.hostRepository=hostRepository;
    }
 
-   //TODO: View REservaations
-    //TOD0: CHANGE THIS PARAMETER TO HOST
    public List<Reservation> getReservationForParticularHost(Host host) throws DataException {
        List<Reservation> reservations=reservationRepository.findByHostId(host.getId());
        List<Guest> guests=guestRepository.findAll();
@@ -37,14 +35,14 @@ public class ReservationService {
            reservations.stream().forEach(
                    reservation -> reservation.setHost(host));
        }
-       //sorting it by first date.
+
        reservations=  reservations.stream().sorted((r1,r2)-> r1.getStartDate().compareTo(r2.getStartDate())).collect(Collectors.toList());
 
        return reservations;
    }
 
 
-   //TODO THIS COULD USE SOME IMPROVEMENTS.
+
    public boolean removeReservationById(int reservationId, Host host) throws  DataException{
        List<Reservation> reservations=reservationRepository.findByHostId(host.getId());
        Reservation reservation=reservations.stream().filter(r-> r.getId()==reservationId).findFirst().orElse(null);
@@ -59,14 +57,14 @@ public class ReservationService {
        return reservationRepository.removeById(reservationId,host);
    }
 
-   public Result<Boolean> updateReservation(Reservation updatedReservation, int reservationId) throws DataException{
+   public Result<Boolean> updateReservation(Reservation updatedReservation) throws DataException{
        Result<Reservation> validationResults=validate(updatedReservation,true);
 
        Result<Boolean> output=new Result<>();
        output.setMessage(validationResults.getErrorMessages());
 
        if(output.isSuccess()){
-           output.setPayload(reservationRepository.update(reservationId,updatedReservation));
+           output.setPayload(reservationRepository.update(updatedReservation));
            return  output;
        }
        output.setPayload(false);
@@ -77,7 +75,7 @@ public class ReservationService {
    public Result<Reservation> add(Reservation reservation,boolean updating) throws DataException{
        Result<Reservation> results=validate(reservation,updating);
        if( results.isSuccess()){
-           //total math over here.
+
            results.setPayload(reservationRepository.add(reservation));
        }
        return results;
@@ -97,22 +95,18 @@ public class ReservationService {
 
    private void validateValues(Reservation reservation,Result<Reservation> result,boolean updating ) throws DataException{
 
-       /*if(updating==true && reservation.getStartDate().compareTo(LocalDate.now())<0){
-           String message=String.format("Start date needs to be after today's date %s", LocalDate.now());
-           result.addErrorMessage(message);
-       }*/
-       // might have to include false here.
+
        if((reservation.getStartDate().compareTo(LocalDate.now())<0)){
-           String message=String.format("Start date needs to be current day: %s or later", LocalDate.now());
+           String message=String.format("Error: Start date needs to be current day: %s or later", LocalDate.now());
            result.addErrorMessage(message);
        }
 
        if(reservation.getStartDate().isAfter(reservation.getEndDate())){
-           result.addErrorMessage("Start date is after the end date. ");
+           result.addErrorMessage("Error: Start date is after the end date. Start date should be before the end date.");
        }
 
        if(validateDateOverlap(reservation,updating)){
-           result.addErrorMessage("The reservation has an overlap with current reservations.");
+           result.addErrorMessage("Error: The reservation has an overlap with a current reservation.");
        }
 
    }
@@ -140,37 +134,37 @@ public class ReservationService {
    private void validateNullValues(Reservation reservation, Result<Reservation> result) throws DataException {
 
        if(reservation==null){
-           result.addErrorMessage("Reservation is Null");
+           result.addErrorMessage("Error: Reservation is Null");
            return;
        }
 
       if(reservation.getGuest()==null){
-          result.addErrorMessage("Guest is null.");
+          result.addErrorMessage("Error: Guest is null.");
       }
       if(reservation.getStartDate()==null){
-          result.addErrorMessage("start date is empty or null.");
+          result.addErrorMessage("Error: start date is empty or null.");
       }
 
        if(reservation.getEndDate()==null){
-           result.addErrorMessage("end date is empty or null.");
+           result.addErrorMessage("Error: end date is empty or null.");
        }
 
        if(reservation.getTotal()==null){
-           result.addErrorMessage("total is null. ");
+           result.addErrorMessage("Error: total is null. ");
        }
        if(reservation.getTotal()!=null&&reservation.getTotal().signum()==-1 ){
-           result.addErrorMessage("total is negative this is not possible.");
+           result.addErrorMessage("Error: total is negative this is not possible.");
        }
        if(reservation.getHost()==null){
-           result.addErrorMessage("Host is  null.");
+           result.addErrorMessage("Error: Host is  null.");
        }
 
        if(reservation.getHost()!=null&&hostRepository.findByEmail(reservation.getHost().getEmail())==null){
-           result.addErrorMessage("Host doesn't exist in the current host file");
+           result.addErrorMessage("Error: Host doesn't exist in the current host database.");
        }
 
        if(reservation.getGuest()!=null &&(guestRepository.findByEmail(reservation.getGuest().getEmail())==null)){
-           result.addErrorMessage("Guest doesn't exist in the current guest file. ");
+           result.addErrorMessage("Error: Guest doesn't exist in the current guest database.");
        }
    }
 

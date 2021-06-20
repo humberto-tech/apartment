@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Repository
 public class ReservationFileRepository implements ReservationRepository{
@@ -48,8 +48,6 @@ public class ReservationFileRepository implements ReservationRepository{
 
     public Reservation add(Reservation reservation) throws DataException {
         List<Reservation> all = findByHostId(reservation.getHost().getId());
-        //reservation.setId(java.util.UUID.randomUUID().toString());
-        // Need to figure out how to add a new id
 
         int nextId = all.stream()
                 .mapToInt(Reservation::getId)
@@ -80,18 +78,13 @@ public class ReservationFileRepository implements ReservationRepository{
 
         return true;
     }
-    //EDIT feature:
+
     @Override
-    public boolean update(int reservationId, Reservation updatedReservation) throws DataException {
+    public boolean update(Reservation updatedReservation) throws DataException {
         List<Reservation> reservations=findByHostId(updatedReservation.getHost().getId());
 
-//        Reservation currentReservation=reservations.stream().filter(reservation -> reservation.getId()==reservationId).findFirst().orElse(null);
-//
-//        if(currentReservation==null){
-//            return false;
-//        }
         for (int i = 0; i < reservations.size(); i++) {
-            if (reservations.get(i).getId()==reservationId) {
+            if (reservations.get(i).getId()== updatedReservation.getId()) {
                 reservations.set(i, updatedReservation);
                 writeAll(reservations,updatedReservation.getHost().getId());
                 return true;
