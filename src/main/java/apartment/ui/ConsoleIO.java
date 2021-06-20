@@ -106,13 +106,13 @@ public class ConsoleIO {
     public LocalDate readLocalDate(String prompt, boolean updatingAReservation) {
         while (true) {
             String input;
-            if( updatingAReservation==true){
-                input=readString(prompt);
-                if(input.isBlank()){
+            if (updatingAReservation == true) {
+                input = readString(prompt);
+                if (input.isBlank()) {
                     return null;
                 }
-            }else{
-                input=readRequiredString(prompt);
+            } else {
+                input = readRequiredString(prompt);
             }
             try {
                 return LocalDate.parse(input, formatter);

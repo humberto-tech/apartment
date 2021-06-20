@@ -8,18 +8,19 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
 @Repository
-public class HostFileRepository implements HostRepository{
+public class HostFileRepository implements HostRepository {
 
     private static final String HEADER = "id,last_name,email,phone,address,city,state,postal_code,standard_rate,weekend_rate";
     private final String filePath;
 
 
-    public HostFileRepository(@Value("${hostFilepath}")String filePath){
-        this.filePath=filePath;
+    public HostFileRepository(@Value("${hostFilepath}") String filePath) {
+        this.filePath = filePath;
     }
 
-    public List<Host> findAll() throws DataException{
+    public List<Host> findAll() throws DataException {
         ArrayList<Host> result = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
 
@@ -39,18 +40,16 @@ public class HostFileRepository implements HostRepository{
     }
 
 
-
-
     private void writeAll(List<Host> hosts) throws DataException {
         try (PrintWriter writer = new PrintWriter(filePath)) {
 
-            writer.println("id,last_name,email,phone,address,city,state,postal_code,standard_rate,weekend_rate");
+            writer.println(HEADER);
 
             if (hosts == null) {
                 return;
             }
 
-            for (Host host  : hosts) {
+            for (Host host : hosts) {
                 writer.println(serialize(host));
             }
 
@@ -72,7 +71,7 @@ public class HostFileRepository implements HostRepository{
     }
 
     @Override
-    public Host findByEmail(String email) throws DataException{
+    public Host findByEmail(String email) throws DataException {
         return findAll().stream()
                 .filter(host -> host.getEmail().equalsIgnoreCase(email))
                 .findFirst()

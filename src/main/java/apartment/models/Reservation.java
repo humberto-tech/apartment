@@ -30,44 +30,44 @@ public class Reservation {
         this.host = host;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
-
-    public void setGuestId(int guestId) {
-        this.guestId = guestId;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
+    public BigDecimal getTotal() {
+        return total;
     }
 
     public void setTotal(BigDecimal total) {
         this.total = total;
     }
 
-    public BigDecimal getTotal() {
-        return total;
-    }
-
     public int getGuestId() {
         return guestId;
+    }
+
+    public void setGuestId(int guestId) {
+        this.guestId = guestId;
     }
 
     public LocalDate getEndDate() {
         return endDate;
     }
 
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
     public LocalDate getStartDate() {
         return startDate;
     }
 
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override
@@ -83,15 +83,15 @@ public class Reservation {
                 '}';
     }
 
-    public void calculateTotal(){
-        BigDecimal newTotal= new BigDecimal(0);
-        for(LocalDate date=this.startDate; date.isBefore(endDate); date=date.plusDays(1)){
-            if(date.getDayOfWeek()== DayOfWeek.FRIDAY || date.getDayOfWeek()==DayOfWeek.SATURDAY){
-                newTotal=newTotal.add(host.getWeekendRate());
-            }else{
-                newTotal=newTotal.add(host.getStandardRate());
+    public void calculateTotal() {
+        BigDecimal newTotal = new BigDecimal(0);
+        for (LocalDate date = this.startDate; date.isBefore(endDate); date = date.plusDays(1)) {
+            if (date.getDayOfWeek() == DayOfWeek.FRIDAY || date.getDayOfWeek() == DayOfWeek.SATURDAY) {
+                newTotal = newTotal.add(host.getWeekendRate());
+            } else {
+                newTotal = newTotal.add(host.getStandardRate());
             }
         }
-        this.total=newTotal;
+        this.total = newTotal;
     }
 }

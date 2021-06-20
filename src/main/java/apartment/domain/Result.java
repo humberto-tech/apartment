@@ -14,7 +14,7 @@ public class Result<T> extends Response {
         this.payload = payload;
     }
 
-    public void setMessage(List<String> messages){
-        this.messages=messages;
+    public void setMessage(List<String> messages) {
+        this.messages = messages;
     }
 }

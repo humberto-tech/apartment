@@ -22,11 +22,11 @@ public class Controller {
     ReservationService reservationService;
     GuestService guestService;
 
-    public Controller(HostService hostService, ReservationService reservationService, GuestService guestService, View view){
-        this.hostService=hostService;
-        this.reservationService=reservationService;
-        this.guestService=guestService;
-        this.view=view;
+    public Controller(HostService hostService, ReservationService reservationService, GuestService guestService, View view) {
+        this.hostService = hostService;
+        this.reservationService = reservationService;
+        this.guestService = guestService;
+        this.view = view;
     }
 
 
@@ -40,7 +40,7 @@ public class Controller {
         view.displayHeader("Goodbye.");
     }
 
-    public void appLoop() throws DataException{
+    public void appLoop() throws DataException {
         MainMenuOption option;
         do {
             option = view.selectMainMenuOption();
@@ -61,141 +61,137 @@ public class Controller {
         } while (option != MainMenuOption.EXIT);
     }
 
-    public void displayViewReservation() throws  DataException{
-        //TODO: ALLOW THE USER TO SEARCH BY EMAIL OR SELECT HOST FROM THE LIST OF HOSTS.
+    public void displayViewReservation() throws DataException {
         view.displayHeader(MainMenuOption.VIEW_RESERVATION.getMessage());
 
-        String hostEmail=view.getUserStringInput("Host Email: ");
+        String hostEmail = view.getUserStringInput("Host Email: ");
 
-        Host host= hostService.findHostFromEmail(hostEmail);
+        Host host = hostService.findHostFromEmail(hostEmail);
 
-        if(host==null){
+        if (host == null) {
             view.hostNotFound(hostEmail);
             return;
         }
 
-        List<Reservation> hostReservations=reservationService.getReservationForParticularHost(host);
-        view.printReservations(host,hostReservations);
+        List<Reservation> hostReservations = reservationService.getReservationForParticularHost(host);
+        view.printReservations(host, hostReservations);
     }
 
-    public void displayCancelReservation() throws DataException{
+    public void displayCancelReservation() throws DataException {
         view.displayHeader(MainMenuOption.CANCEL_RESERVATION.getMessage());
-        String guestEmail=view.getUserStringInput("Guest Email: ");
-        Guest guest= guestService.findGuestByEmail(guestEmail);
-        if(guest==null){
+        String guestEmail = view.getUserStringInput("Guest Email: ");
+        Guest guest = guestService.findGuestByEmail(guestEmail);
+        if (guest == null) {
             view.guestNotFound(guestEmail);
             return;
         }
-        String hostEmail=view.getUserStringInput("Host Email: ");
-        Host host= hostService.findHostFromEmail(hostEmail);
-        if(host==null){
+        String hostEmail = view.getUserStringInput("Host Email: ");
+        Host host = hostService.findHostFromEmail(hostEmail);
+        if (host == null) {
             view.hostNotFound(hostEmail);
             return;
         }
 
 
-        List<Reservation> reservations=reservationService.getReservationForParticularHost(host);
+        List<Reservation> reservations = reservationService.getReservationForParticularHost(host);
 
-        reservations=reservations.stream().filter(reservation -> reservation.getGuest().getEmail().equals(guestEmail)
-        && reservation.getStartDate().compareTo(LocalDate.now())>0).collect(Collectors.toList());
+        reservations = reservations.stream().filter(reservation -> reservation.getGuest().getEmail().equals(guestEmail)
+                && reservation.getStartDate().compareTo(LocalDate.now()) > 0).collect(Collectors.toList());
 
-        view.printReservations(host,reservations);
+        view.printReservations(host, reservations);
 
-        if(reservations.size()==0){
+        if (reservations.size() == 0) {
 
             return;
         }
-        int deleteThisid=view.getUserIntInput("Reservation id to be removed: ",
+        int deleteThisid = view.getUserIntInput("Reservation id to be removed: ",
                 reservations.stream().mapToInt(Reservation::getId).min().getAsInt(),
                 reservations.stream().mapToInt(Reservation::getId).max().getAsInt());
-        view.displayReservationDeletionStatus(reservationService.removeReservationById(deleteThisid,host),deleteThisid);
+        view.displayReservationDeletionStatus(reservationService.removeReservationById(deleteThisid, host), deleteThisid);
 
     }
-    public void displayMakeReservation() throws  DataException{
+
+    public void displayMakeReservation() throws DataException {
         view.displayHeader(MainMenuOption.MAKE_RESERVATION.getMessage());
 
-        String guestEmail=view.getUserStringInput("Guest Email: ");
-        Guest guest= guestService.findGuestByEmail(guestEmail);
-        if(guest==null){
+        String guestEmail = view.getUserStringInput("Guest Email: ");
+        Guest guest = guestService.findGuestByEmail(guestEmail);
+        if (guest == null) {
             view.guestNotFound(guestEmail);
             return;
         }
 
-        String hostEmail=view.getUserStringInput("Host Email: ");
-        Host host= hostService.findHostFromEmail(hostEmail);
-        if(host==null){
+        String hostEmail = view.getUserStringInput("Host Email: ");
+        Host host = hostService.findHostFromEmail(hostEmail);
+        if (host == null) {
             view.hostNotFound(hostEmail);
             return;
         }
 
 
-        List<Reservation> reservations=reservationService.getReservationForParticularHost(host);
+        List<Reservation> reservations = reservationService.getReservationForParticularHost(host);
 
-        reservations=reservations.stream().filter(reservation -> reservation.getEndDate().compareTo(LocalDate.now())>=0).collect(Collectors.toList());
-        view.printReservations(host,reservations);
-        if(reservations.size()==0){
+        reservations = reservations.stream().filter(reservation -> reservation.getEndDate().compareTo(LocalDate.now()) >= 0).collect(Collectors.toList());
+        view.printReservations(host, reservations);
+        if (reservations.size() == 0) {
             return;
         }
-        Reservation newReservation= view.createReservation(guest,host);
+        Reservation newReservation = view.createReservation(guest, host);
 
 
-
-        if(view.displayReservationSummary(newReservation).equals("n")){
+        if (view.displayReservationSummary(newReservation).equals("n")) {
             return;
         }
-        Result<Reservation> result=reservationService.add(newReservation,false);
+        Result<Reservation> result = reservationService.add(newReservation, false);
         view.displayMakeReservationResults(result);
 
 
     }
-    public void displayEditReservation() throws DataException{
+
+    public void displayEditReservation() throws DataException {
         view.displayHeader(MainMenuOption.EDIT_RESERVATION.getMessage());
 
-        String guestEmail=view.getUserStringInput("Guest Email: ");
+        String guestEmail = view.getUserStringInput("Guest Email: ");
 
-        Guest guest= guestService.findGuestByEmail(guestEmail);
-        if(guest==null){
+        Guest guest = guestService.findGuestByEmail(guestEmail);
+        if (guest == null) {
             view.guestNotFound(guestEmail);
             return;
         }
 
 
-        String hostEmail=view.getUserStringInput("Host Email: ");
+        String hostEmail = view.getUserStringInput("Host Email: ");
 
-        Host host= hostService.findHostFromEmail(hostEmail);
-        if(host==null){
+        Host host = hostService.findHostFromEmail(hostEmail);
+        if (host == null) {
             view.hostNotFound(hostEmail);
             return;
         }
 
-        List<Reservation> reservations=reservationService.getReservationForParticularHost(host);
+        List<Reservation> reservations = reservationService.getReservationForParticularHost(host);
 
-        reservations=reservations.stream().filter(reservation ->  reservation.getGuest().getEmail().equals(guestEmail) ).collect(Collectors.toList());
-        view.printReservations(host,reservations);
-        if(reservations.size()==0){
+        reservations = reservations.stream().filter(reservation -> reservation.getGuest().getEmail().equals(guestEmail)).collect(Collectors.toList());
+        view.printReservations(host, reservations);
+        if (reservations.size() == 0) {
             return;
         }
-        int deleteThisid=view.getUserIntInput("Reservation id to edit ",
+        int deleteThisid = view.getUserIntInput("Reservation id to edit ",
                 reservations.stream().mapToInt(Reservation::getId).min().getAsInt(),
                 reservations.stream().mapToInt(Reservation::getId).max().getAsInt());
 
-        Reservation currentReservation=reservations.stream().filter(reservation -> reservation.getId()==deleteThisid).findFirst().get();
-        if(currentReservation==null){
+        Reservation currentReservation = reservations.stream().filter(reservation -> reservation.getId() == deleteThisid).findFirst().get();
+        if (currentReservation == null) {
             return;
         }
-        Reservation newReservation=view.createEditReservation(currentReservation);
+        Reservation newReservation = view.createEditReservation(currentReservation);
 
 
-
-        if(view.displaySummaryOfNewReservations(newReservation).equals("y")){
-            Result<Boolean> result= reservationService.updateReservation(newReservation);
-            view.displayEditReservationResult(result,newReservation);
+        if (view.displaySummaryOfNewReservations(newReservation).equals("y")) {
+            Result<Boolean> result = reservationService.updateReservation(newReservation);
+            view.displayEditReservationResult(result, newReservation);
         }
 
     }
-
-
-
 
 
 }

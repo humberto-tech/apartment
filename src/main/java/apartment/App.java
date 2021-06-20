@@ -1,7 +1,5 @@
 package apartment;
 
-import apartment.data.GuestFileRepository;
-import apartment.data.ReservationFileRepository;
 import apartment.ui.Controller;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

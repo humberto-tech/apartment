@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class HostService {
-    private HostRepository hostRepository;
+    private final HostRepository hostRepository;
 
-    public HostService(HostRepository repository){
-        this.hostRepository=repository;
+    public HostService(HostRepository repository) {
+        this.hostRepository = repository;
     }
 
     public Host findHostFromEmail(String email) throws DataException {

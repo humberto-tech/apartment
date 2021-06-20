@@ -14,12 +14,14 @@ import java.util.List;
 
 
 @Repository
-public class ReservationFileRepository implements ReservationRepository{
+public class ReservationFileRepository implements ReservationRepository {
 
     private static final String HEADER = "id,start_date,end_date,guest_id,total";
     private final String directory;
 
-    public ReservationFileRepository(@Value("${reservationDirectory}") String directory){this.directory=directory;}
+    public ReservationFileRepository(@Value("${reservationDirectory}") String directory) {
+        this.directory = directory;
+    }
 
     public List<Reservation> findByHostId(String hostId) {
         ArrayList<Reservation> result = new ArrayList<>();
@@ -39,11 +41,8 @@ public class ReservationFileRepository implements ReservationRepository{
         }
 
 
-
-
         return result;
     }
-
 
 
     public Reservation add(Reservation reservation) throws DataException {
@@ -61,36 +60,36 @@ public class ReservationFileRepository implements ReservationRepository{
     }
 
     @Override
-    public boolean removeById(int id,Host host) throws DataException {
+    public boolean removeById(int id, Host host) throws DataException {
 
 
-        List<Reservation> reservations=findByHostId(host.getId());
+        List<Reservation> reservations = findByHostId(host.getId());
 
-        Reservation removeThisReservation=reservations.stream().filter(reservation -> reservation.getId()==id)
+        Reservation removeThisReservation = reservations.stream().filter(reservation -> reservation.getId() == id)
                 .findFirst()
                 .orElse(null);
 
-        if(removeThisReservation==null){
+        if (removeThisReservation == null) {
             return false;
         }
         reservations.remove(removeThisReservation);
-        writeAll(reservations,host.getId());
+        writeAll(reservations, host.getId());
 
         return true;
     }
 
     @Override
     public boolean update(Reservation updatedReservation) throws DataException {
-        List<Reservation> reservations=findByHostId(updatedReservation.getHost().getId());
+        List<Reservation> reservations = findByHostId(updatedReservation.getHost().getId());
 
         for (int i = 0; i < reservations.size(); i++) {
-            if (reservations.get(i).getId()== updatedReservation.getId()) {
+            if (reservations.get(i).getId() == updatedReservation.getId()) {
                 reservations.set(i, updatedReservation);
-                writeAll(reservations,updatedReservation.getHost().getId());
+                writeAll(reservations, updatedReservation.getHost().getId());
                 return true;
             }
         }
-        return  false;
+        return false;
 
     }
 
@@ -124,17 +123,13 @@ public class ReservationFileRepository implements ReservationRepository{
 
     private Reservation deserialize(String[] fields) {
         Reservation reservation = new Reservation();
-        reservation.setId(Integer.parseInt( fields[0]));
+        reservation.setId(Integer.parseInt(fields[0]));
         reservation.setStartDate(LocalDate.parse(fields[1]));
         reservation.setEndDate(LocalDate.parse(fields[2]));
         reservation.setGuestId(Integer.parseInt(fields[3]));
         reservation.setTotal(new BigDecimal(fields[4]));
         return reservation;
     }
-
-
-
-
 
 
 }

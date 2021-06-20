@@ -1,7 +1,6 @@
 package apartment.data;
 
 import apartment.models.Guest;
-import apartment.models.Host;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -14,12 +13,12 @@ public class GuestFileRepository implements GuestRepository {
     private static final String HEADER = "guest_id,first_name,last_name,email,phone,state";
     private final String filePath;
 
-    public GuestFileRepository( @Value("${guestFilepath}") String filePath){
-        this.filePath=filePath;
+    public GuestFileRepository(@Value("${guestFilepath}") String filePath) {
+        this.filePath = filePath;
     }
 
 
-    public List<Guest> findAll() throws DataException{
+    public List<Guest> findAll() throws DataException {
         ArrayList<Guest> result = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
 
@@ -41,13 +40,13 @@ public class GuestFileRepository implements GuestRepository {
     private void writeAll(List<Guest> guests) throws DataException {
         try (PrintWriter writer = new PrintWriter(filePath)) {
 
-            writer.println("guest_id,first_name,last_name,email,phone,state");
+            writer.println(HEADER);
 
             if (guests == null) {
                 return;
             }
 
-            for (Guest guest  : guests) {
+            for (Guest guest : guests) {
                 writer.println(serialize(guest));
             }
 
@@ -56,7 +55,7 @@ public class GuestFileRepository implements GuestRepository {
         }
     }
 
-    public Guest findByEmail(String email) throws DataException{
+    public Guest findByEmail(String email) throws DataException {
         return findAll().stream()
                 .filter(guest -> guest.getEmail().equalsIgnoreCase(email))
                 .findFirst()
@@ -86,9 +85,6 @@ public class GuestFileRepository implements GuestRepository {
     }
 
 
-
-
-
     private String serialize(Guest guest) {
         return String.format("%d,%s,%s,%s,%s,%s",
                 guest.getId(),
@@ -109,10 +105,6 @@ public class GuestFileRepository implements GuestRepository {
         guest.setState(fields[5]);
         return guest;
     }
-
-
-
-
 
 
 }

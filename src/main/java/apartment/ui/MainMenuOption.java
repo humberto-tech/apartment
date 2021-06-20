@@ -3,11 +3,10 @@ package apartment.ui;
 public enum MainMenuOption {
 
     EXIT(0, "Exit"),
-    VIEW_RESERVATION(1,"View Reservations for Host"),
-    MAKE_RESERVATION(2,"Make a Reservation"),
-    EDIT_RESERVATION(3,"Edit a Reservation"),
-    CANCEL_RESERVATION(4,"Cancel a Reservation");
-
+    VIEW_RESERVATION(1, "View Reservations for Host"),
+    MAKE_RESERVATION(2, "Make a Reservation"),
+    EDIT_RESERVATION(3, "Edit a Reservation"),
+    CANCEL_RESERVATION(4, "Cancel a Reservation");
 
 
     private final int value;

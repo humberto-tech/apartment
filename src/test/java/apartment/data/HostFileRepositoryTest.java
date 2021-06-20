@@ -11,18 +11,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class HostFileRepositoryTest{
+public class HostFileRepositoryTest {
 
     static final String SEED_PATH = "./data/hosts_seed.csv";
     static final String TEST_PATH = "./data/hosts_test.csv";
 
-    HostFileRepository repository= new HostFileRepository(TEST_PATH);
-
-
-
+    HostFileRepository repository = new HostFileRepository(TEST_PATH);
 
 
     @BeforeEach
@@ -33,15 +31,14 @@ public class HostFileRepositoryTest{
     }
 
     @Test
-    public void getAllHosts() throws DataException{
-        List<Host> all=repository.findAll();
-        assertEquals(3,all.size());
+    public void getAllHosts() throws DataException {
+        List<Host> all = repository.findAll();
+        assertEquals(3, all.size());
     }
 
-    //b4f38829-c663-48fc-8bf3-7fca47a7ae70,Fader,mfader2@amazon.co.jp,(501) 2490895,99208 Morning Parkway,North Little Rock,AR,72118,451,563.75
     @Test
-    public void findHostWithValidEmail() throws DataException{
-        Host compareHost= new Host();
+    public void findHostWithValidEmail() throws DataException {
+        Host compareHost = new Host();
         compareHost.setId("b4f38829-c663-48fc-8bf3-7fca47a7ae70");
         compareHost.setLastName("Fader");
         compareHost.setEmail("mfader2@amazon.co.jp");
@@ -51,13 +48,14 @@ public class HostFileRepositoryTest{
         compareHost.setState("AR");
         compareHost.setPostalCode(Integer.parseInt("72118"));
         compareHost.setStandardRate(new BigDecimal("451"));
-        compareHost.setWeekendRate(new BigDecimal(  "563.75"));
+        compareHost.setWeekendRate(new BigDecimal("563.75"));
 
         assertEquals(compareHost, repository.findByEmail("mfader2@amazon.co.jp"));
 
     }
+
     @Test
-    public void attemptToFindHostWithNonValidEmail() throws DataException{
+    public void attemptToFindHostWithNonValidEmail() throws DataException {
 
         assertEquals(null, repository.findByEmail("madeThisEmail@up.co.jp"));
     }

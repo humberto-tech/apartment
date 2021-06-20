@@ -19,18 +19,18 @@ public class View {
         this.io = io;
     }
 
-    public void reservationSummary(Reservation reservation){
+    public void reservationSummary(Reservation reservation) {
         io.println("Reservation Summary:");
-        io.printf("Start date: %s%n",reservation.getStartDate());
-        io.printf("End date: %s%n",reservation.getEndDate());
-        io.printf("Total: %s%n",reservation.getTotal());
+        io.printf("Start date: %s%n", reservation.getStartDate());
+        io.printf("End date: %s%n", reservation.getEndDate());
+        io.printf("Total: %s%n", reservation.getTotal());
     }
 
-    public String displayReservationSummary(Reservation reservation){
+    public String displayReservationSummary(Reservation reservation) {
         reservationSummary(reservation);
-        String userInput="";
-        while(!(userInput.equals("y") || userInput.equals("n"))){
-            userInput=io.readString("Is this okay? Select y or n: ");
+        String userInput = "";
+        while (!(userInput.equals("y") || userInput.equals("n"))) {
+            userInput = io.readString("Is this okay? Select y or n: ");
         }
         return userInput;
     }
@@ -47,7 +47,6 @@ public class View {
             max = Math.max(max, option.getValue());
         }
 
-        //TODO: index box
         String message = String.format("Select [%s-%s]: ", min, max);
         return MainMenuOption.fromValue(io.readInt(message, min, max));
     }
@@ -63,89 +62,90 @@ public class View {
         io.println(ex.getMessage());
     }
 
-    public String getUserStringInput(String prompt){
+    public String getUserStringInput(String prompt) {
         return io.readString(prompt);
     }
 
 
-    public void printReservations(Host host, List<Reservation> reservations){
-        io.printf("%s: %s, %s%n", host.getLastName(),host.getCity(),host.getState());
+    public void printReservations(Host host, List<Reservation> reservations) {
+        io.printf("%s: %s, %s%n", host.getLastName(), host.getCity(), host.getState());
 
-        if(reservations.size()==0){
+        if (reservations.size() == 0) {
             io.println("No reservations for this host!!!");
         }
         reservations.stream().forEach(
-               reservation ->  io.printf("ID: %d, %s - %s, Guest: %s, %s, Email: %s%n",
-                       reservation.getId(),
-                       reservation.getStartDate(),
-                       reservation.getEndDate(),
-                       reservation.getGuest().getLastName(),
-                       reservation.getGuest().getFirstName(),
-                       reservation.getGuest().getEmail()));
+                reservation -> io.printf("ID: %d, %s - %s, Guest: %s, %s, Email: %s%n",
+                        reservation.getId(),
+                        reservation.getStartDate(),
+                        reservation.getEndDate(),
+                        reservation.getGuest().getLastName(),
+                        reservation.getGuest().getFirstName(),
+                        reservation.getGuest().getEmail()));
     }
 
-    public void hostNotFound(String email){
-        io.println("No host found with the following email: "+email);
-    }
-    public void guestNotFound(String email){
-        io.println("No guest in the database has the following email: "+email);
+    public void hostNotFound(String email) {
+        io.println("No host found with the following email: " + email);
     }
 
-    public int getUserIntInput(String prompt, int min, int max){
-        return io.readInt(prompt,min,max);
+    public void guestNotFound(String email) {
+        io.println("No guest in the database has the following email: " + email);
     }
 
-    public void displayReservationDeletionStatus(boolean deleted, int deletedId){
-        if(deleted){
+    public int getUserIntInput(String prompt, int min, int max) {
+        return io.readInt(prompt, min, max);
+    }
+
+    public void displayReservationDeletionStatus(boolean deleted, int deletedId) {
+        if (deleted) {
             io.println("Success");
             io.printf("Reservation %d has been removed%n", deletedId);
-        }else{
+        } else {
             io.printf("No deletion occurred. This only occurs if you try to delete past reservation.");
         }
     }
 
-    public LocalDate getDate(String prompt,Boolean updatingAReservation){
-        return io.readLocalDate(prompt,updatingAReservation);
+    public LocalDate getDate(String prompt, Boolean updatingAReservation) {
+        return io.readLocalDate(prompt, updatingAReservation);
     }
 
-    public String displaySummaryOfNewReservations(Reservation reservation){
-        io.printf("Start: %s%n",reservation.getStartDate());
+    public String displaySummaryOfNewReservations(Reservation reservation) {
+        io.printf("Start: %s%n", reservation.getStartDate());
 
-        io.printf("End %s%n",reservation.getEndDate());
+        io.printf("End %s%n", reservation.getEndDate());
 
-        io.printf("Total: %s%n",reservation.getTotal());
+        io.printf("Total: %s%n", reservation.getTotal());
 
         return io.readString("Is this okay [y/n]: ");
     }
 
-    public void displayEditReservationResult(Result<Boolean> result, Reservation reservation){
-        if(!result.isSuccess()){
-            result.getErrorMessages().stream().forEach(a-> io.printf("%s%n",a));
+    public void displayEditReservationResult(Result<Boolean> result, Reservation reservation) {
+        if (!result.isSuccess()) {
+            result.getErrorMessages().stream().forEach(a -> io.printf("%s%n", a));
         }
 
-        if(result.getPayload()==true){
+        if (result.getPayload() == true) {
             io.printf("Congrats edit occurred%n");
-        }else{
+        } else {
             io.println("Edit did not occur.%n");
         }
     }
 
-    public void displayMakeReservationResults(Result<Reservation> result){
-        if(!result.isSuccess()){
-            result.getErrorMessages().stream().forEach(a-> io.printf("%s%n",a));
+    public void displayMakeReservationResults(Result<Reservation> result) {
+        if (!result.isSuccess()) {
+            result.getErrorMessages().stream().forEach(a -> io.printf("%s%n", a));
             return;
         }
         io.println("Success!!!");
-        io.printf("Reservation %d was created\n",result.getPayload().getId());
+        io.printf("Reservation %d was created\n", result.getPayload().getId());
 
     }
 
-    public Reservation createReservation(Guest guest,Host host){
-        Reservation newReservation= new Reservation();
+    public Reservation createReservation(Guest guest, Host host) {
+        Reservation newReservation = new Reservation();
 
         io.println("Enter the start and end dates for the new reservation!!!");
-        LocalDate startDate=getDate("Start date: ",false);
-        LocalDate endDate=getDate("End date: ",false);
+        LocalDate startDate = getDate("Start date: ", false);
+        LocalDate endDate = getDate("End date: ", false);
 
         newReservation.setTotal(new BigDecimal(0));
         newReservation.setStartDate(startDate);
@@ -157,25 +157,26 @@ public class View {
 
         return newReservation;
     }
-    public Reservation createEditReservation(Reservation currentReservation ){
-        Reservation newReservation=new Reservation();
+
+    public Reservation createEditReservation(Reservation currentReservation) {
+        Reservation newReservation = new Reservation();
         newReservation.setHost(currentReservation.getHost());
         newReservation.setGuestId(currentReservation.getGuestId());
         newReservation.setId(currentReservation.getId());
         newReservation.setGuest(currentReservation.getGuest());
         newReservation.setTotal(new BigDecimal(0));
 
-        LocalDate startDate=getDate(String.format("Start date(%s): ",currentReservation.getStartDate()),true);
-        LocalDate endDate=getDate(String.format("End date(%s): ",currentReservation.getEndDate()),true);
+        LocalDate startDate = getDate(String.format("Start date(%s): ", currentReservation.getStartDate()), true);
+        LocalDate endDate = getDate(String.format("End date(%s): ", currentReservation.getEndDate()), true);
 
-        if(startDate==null){
+        if (startDate == null) {
             newReservation.setStartDate(currentReservation.getStartDate());
-        }else{
+        } else {
             newReservation.setStartDate(startDate);
         }
-        if(endDate==null){
+        if (endDate == null) {
             newReservation.setEndDate(currentReservation.getEndDate());
-        }else{
+        } else {
             newReservation.setEndDate(endDate);
         }
 
@@ -184,12 +185,6 @@ public class View {
         return newReservation;
 
     }
-
-
-
-
-
-
 
 
 }

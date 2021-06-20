@@ -2,8 +2,7 @@ package apartment.models;
 
 import java.util.Objects;
 
-public class Guest
-{
+public class Guest {
     int id;
     String firstName;
     String lastName;
@@ -30,6 +29,7 @@ public class Guest
     public int getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
