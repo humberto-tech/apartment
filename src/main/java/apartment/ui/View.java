@@ -1,10 +1,12 @@
 package apartment.ui;
 
 import apartment.domain.Result;
+import apartment.models.Guest;
 import apartment.models.Host;
 import apartment.models.Reservation;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -19,16 +21,16 @@ public class View {
 
     public void reservationSummary(Reservation reservation){
         io.println("Reservation Summary:");
-        io.printf("Start date: %s",reservation.getStartDate());
-        io.printf("End date: %s",reservation.getEndDate());
-        io.printf("Total: %s",reservation.getTotal());
+        io.printf("Start date: %s%n",reservation.getStartDate());
+        io.printf("End date: %s%n",reservation.getEndDate());
+        io.printf("Total: %s%n",reservation.getTotal());
     }
 
     public String displayReservationSummary(Reservation reservation){
         reservationSummary(reservation);
         String userInput="";
         while(!(userInput.equals("y") || userInput.equals("n"))){
-            userInput=io.readString("Is this okay? Select y or n.");
+            userInput=io.readString("Is this okay? Select y or n: ");
         }
         return userInput;
     }
@@ -83,7 +85,7 @@ public class View {
     }
 
     public void hostNotFound(String email){
-        io.println("No host found with the following: "+email);
+        io.println("No host found with the following email: "+email);
     }
     public void guestNotFound(String email){
         io.println("No guest in the database has the following email: "+email);
@@ -102,8 +104,8 @@ public class View {
         }
     }
 
-    public LocalDate getDate(String prompt){
-        return io.readLocalDate(prompt);
+    public LocalDate getDate(String prompt,Boolean updatingAReservation){
+        return io.readLocalDate(prompt,updatingAReservation);
     }
 
     public String displaySummaryOfNewReservations(Reservation reservation){
@@ -122,7 +124,7 @@ public class View {
         }
 
         if(result.getPayload()==true){
-            io.printf("Congrantatlions edit occured%n");
+            io.printf("Congrats edit occurred%n");
         }else{
             io.println("Edit did not occur.%n");
         }
@@ -134,7 +136,52 @@ public class View {
             return;
         }
         io.println("Success!!!");
-        io.printf("Reservation %d was created%n",result.getPayload().getId());
+        io.printf("Reservation %d was created\n",result.getPayload().getId());
+
+    }
+
+    public Reservation createReservation(Guest guest,Host host){
+        Reservation newReservation= new Reservation();
+
+        io.println("Enter the start and end dates for the new reservation!!!");
+        LocalDate startDate=getDate("Start date: ",false);
+        LocalDate endDate=getDate("End date: ",false);
+
+        newReservation.setTotal(new BigDecimal(0));
+        newReservation.setStartDate(startDate);
+        newReservation.setEndDate(endDate);
+        newReservation.setGuest(guest);
+        newReservation.setGuestId(guest.getId());
+        newReservation.setHost(host);
+        newReservation.calculateTotal();
+
+        return newReservation;
+    }
+    public Reservation createEditReservation(Reservation currentReservation ){
+        Reservation newReservation=new Reservation();
+        newReservation.setHost(currentReservation.getHost());
+        newReservation.setGuestId(currentReservation.getGuestId());
+        newReservation.setId(currentReservation.getId());
+        newReservation.setGuest(currentReservation.getGuest());
+        newReservation.setTotal(new BigDecimal(0));
+
+        LocalDate startDate=getDate(String.format("Start date(%s): ",currentReservation.getStartDate()),true);
+        LocalDate endDate=getDate(String.format("End date(%s): ",currentReservation.getEndDate()),true);
+
+        if(startDate==null){
+            newReservation.setStartDate(currentReservation.getStartDate());
+        }else{
+            newReservation.setStartDate(startDate);
+        }
+        if(endDate==null){
+            newReservation.setEndDate(currentReservation.getEndDate());
+        }else{
+            newReservation.setEndDate(endDate);
+        }
+
+        newReservation.calculateTotal();
+
+        return newReservation;
 
     }
 

@@ -103,9 +103,17 @@ public class ConsoleIO {
         }
     }
 
-    public LocalDate readLocalDate(String prompt) {
+    public LocalDate readLocalDate(String prompt, boolean updatingAReservation) {
         while (true) {
-            String input = readRequiredString(prompt);
+            String input;
+            if( updatingAReservation==true){
+                input=readString(prompt);
+                if(input.isBlank()){
+                    return null;
+                }
+            }else{
+                input=readRequiredString(prompt);
+            }
             try {
                 return LocalDate.parse(input, formatter);
             } catch (DateTimeParseException ex) {

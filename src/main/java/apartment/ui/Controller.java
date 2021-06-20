@@ -161,19 +161,9 @@ public class Controller {
         if(reservations.size()==0){
             return;
         }
-        LocalDate startDate=view.getDate("Start: ");
-        LocalDate endDate=view.getDate("End:");
+        Reservation newReservation= view.createReservation(guest,host);
 
-        Reservation newReservation= new Reservation();
-        newReservation.setStartDate(startDate);
-        newReservation.setEndDate(endDate);
-        //Need to get guess id & guess.
-        newReservation.setGuest(guest);
-        newReservation.setGuestId(guest.getId());
-        newReservation.setHost(host);
-        newReservation.calculateTotal();
 
-        view.reservationSummary(newReservation);
 
         if(view.displayReservationSummary(newReservation).equals("n")){
             return;
@@ -187,6 +177,14 @@ public class Controller {
         view.displayHeader(MainMenuOption.EDIT_RESERVATION.getMessage());
 
         String guestEmail=view.getUserStringInput("Guest Email: ");
+
+        Guest guest= guestService.findGuestByEmail(guestEmail);
+        if(guest==null){
+            view.guestNotFound(guestEmail);
+            return;
+        }
+
+
         String hostEmail=view.getUserStringInput("Host Email: ");
 
         Host host= hostService.findHostFromEmail(hostEmail);
@@ -194,14 +192,10 @@ public class Controller {
             view.hostNotFound(hostEmail);
             return;
         }
-        Guest guest= guestService.findGuestByEmail(guestEmail);
-        if(guest==null){
-            view.guestNotFound(guestEmail);
-            return;
-        }
+
         List<Reservation> reservations=reservationService.getReservationForParticularHost(host);
         // Filter to get future reservations.
-        reservations=reservations.stream().filter(reservation -> reservation.getEndDate().compareTo(LocalDate.now())>=0 && reservation.getGuest().getEmail().equals(guestEmail) ).collect(Collectors.toList());
+        reservations=reservations.stream().filter(reservation ->  reservation.getGuest().getEmail().equals(guestEmail) ).collect(Collectors.toList());
         view.printReservations(host,reservations);
         if(reservations.size()==0){
             return;
@@ -210,12 +204,13 @@ public class Controller {
                 reservations.stream().mapToInt(Reservation::getId).min().getAsInt(),
                 reservations.stream().mapToInt(Reservation::getId).max().getAsInt());
 
-        Reservation newReservation=reservations.get(0);
-        newReservation.setHost(host);
-        newReservation.setGuest(guest);
-        newReservation.setGuestId(deleteThisid);
-        newReservation.setStartDate(view.getDate(String.format("Start (%s)", newReservation.getStartDate())));
-        newReservation.setStartDate(view.getDate(String.format("End (%s)", newReservation.getStartDate())));
+        Reservation currentReservation=reservations.stream().filter(reservation -> reservation.getId()==deleteThisid).findFirst().get();
+        if(currentReservation==null){
+            return;
+        }
+        Reservation newReservation=view.createEditReservation(currentReservation);
+
+
 
         if(view.displaySummaryOfNewReservations(newReservation).equals("y")){
             Result<Boolean> result= reservationService.updateReservation(newReservation,deleteThisid);

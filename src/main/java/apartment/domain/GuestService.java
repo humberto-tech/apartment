@@ -22,5 +22,4 @@ public class GuestService {
         return guestRepository.findByEmail(email);
     }
 
-
 }

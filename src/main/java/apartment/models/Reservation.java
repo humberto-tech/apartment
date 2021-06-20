@@ -84,12 +84,14 @@ public class Reservation {
     }
 
     public void calculateTotal(){
-        for(LocalDate date=this.startDate; date.isBefore(startDate); date=date.plusDays(1)){
+        BigDecimal newTotal= new BigDecimal(0);
+        for(LocalDate date=this.startDate; date.isBefore(endDate); date=date.plusDays(1)){
             if(date.getDayOfWeek()== DayOfWeek.FRIDAY || date.getDayOfWeek()==DayOfWeek.SATURDAY){
-                total=total.add(host.weekendRate);
+                newTotal=newTotal.add(host.getWeekendRate());
             }else{
-                total=total.add(host.standardRate);
+                newTotal=newTotal.add(host.getStandardRate());
             }
         }
+        this.total=newTotal;
     }
 }

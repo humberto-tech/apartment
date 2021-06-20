@@ -31,7 +31,7 @@ public class ReservationService {
            reservations.stream()
                    .forEach(reservation -> reservation.setGuest(
                            guests.stream()
-                           .filter(guest -> guest.getId()==reservation.getId())
+                           .filter(guest -> guest.getId()==reservation.getGuestId())
                            .findFirst()
                            .orElse(null)));
            reservations.stream().forEach(
@@ -90,21 +90,19 @@ public class ReservationService {
            return result;
        }
        validateValues(reservation,result, updating);
-       if(!result.isSuccess()){
-           return result;
-       }
+
 
        return result;
    }
 
    private void validateValues(Reservation reservation,Result<Reservation> result,boolean updating ) throws DataException{
 
-       if(updating==true && reservation.getStartDate().compareTo(LocalDate.now())<0){
+       /*if(updating==true && reservation.getStartDate().compareTo(LocalDate.now())<0){
            String message=String.format("Start date needs to be after today's date %s", LocalDate.now());
            result.addErrorMessage(message);
-       }
-
-       if((reservation.getStartDate().compareTo(LocalDate.now())<0 && updating==false)){
+       }*/
+       // might have to include false here.
+       if((reservation.getStartDate().compareTo(LocalDate.now())<0)){
            String message=String.format("Start date needs to be current day: %s or later", LocalDate.now());
            result.addErrorMessage(message);
        }
