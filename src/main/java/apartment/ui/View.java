@@ -126,7 +126,7 @@ public class View {
         if (result.getPayload() == true) {
             io.printf("Congrats edit occurred%n");
         } else {
-            io.println("Edit did not occur.%n");
+            io.println("Edit did not occur.");
         }
     }
 

@@ -175,7 +175,7 @@ public class Controller {
         if (reservations.size() == 0) {
             return;
         }
-        int deleteThisid = view.getUserIntInput("Reservation id to edit ",
+        int deleteThisid = view.getUserIntInput("Reservation id to edit: ",
                 reservations.stream().mapToInt(Reservation::getId).min().getAsInt(),
                 reservations.stream().mapToInt(Reservation::getId).max().getAsInt());
 

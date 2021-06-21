@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,16 +28,15 @@ public class ReservationService {
 
     public List<Reservation> getReservationForParticularHost(Host host) throws DataException {
         List<Reservation> reservations = reservationRepository.findByHostId(host.getId());
-        List<Guest> guests = guestRepository.findAll();
+
+        Map<Integer,Guest> guestMap = guestRepository.findAll().stream()
+                .collect(Collectors.toMap(guest -> guest.getId(),guest -> guest));
+
+
+
         if (reservations.size() != 0) {
-            reservations.stream()
-                    .forEach(reservation -> reservation.setGuest(
-                            guests.stream()
-                                    .filter(guest -> guest.getId() == reservation.getGuestId())
-                                    .findFirst()
-                                    .orElse(null)));
-            reservations.stream().forEach(
-                    reservation -> reservation.setHost(host));
+            reservations.stream().forEach(reservation -> reservation.setGuest(guestMap.get(reservation.getGuestId())));
+            reservations.forEach(reservation -> reservation.setHost(host));
         }
 
         reservations = reservations.stream().sorted((r1, r2) -> r1.getStartDate().compareTo(r2.getStartDate())).collect(Collectors.toList());
